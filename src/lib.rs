@@ -1,7 +1,7 @@
 #![deny(missing_docs)]
 //! This crate provides the utilities for creating strictly ordered execution graphs
 //! of systems for the [Bevy][bevy] game engine.
-//! 
+//!
 //! # Starting a Graph
 //! To start building a system graph, one or more systems must be added to the graph
 //! as root nodes. Root systems have no dependencies within the graph.
@@ -11,15 +11,15 @@
 //! # fn sys_b() {}
 //! # fn sys_c() {}
 //! let graph = SystemGraph::new();
-//! 
+//!
 //! // Create a root system for the graph.
 //! let root_a = graph.root(sys_a);
-//! 
+//!
 //! // Graphs can have multiple root nodes.
 //! let root_b = graph.root(sys_b);
 //! let root_c = graph.root(sys_c);
 //! ```
-//! 
+//!
 //! # Using SystemLabels
 //! Systems can still use labels to establish the ordering of systems relative
 //! to other systems outside of the graph.
@@ -33,22 +33,22 @@
 //! 	   .before("Propagate Transforms")
 //! );
 //! ```
-//! 
+//!
 //! # Conversion into SystemSet
-//! To ease adding all of the graph's systems into a [`Schedule`], both 
+//! To ease adding all of the graph's systems into a [`Schedule`], both
 //! [`SystemGraph`] and [`SystemGraphNode`] implement [`Into<SystemSet>`].
 //! ```rust
 //! # use bevy_ecs::prelude::*;
 //! # fn sys_a() {}
 //! let graph = SystemGraph::new();
 //! let root_a = graph.root(sys_a);
-//! 
+//!
 //! // Convert into a SystemSet
 //! let system_set: SystemSet = graph.into();
 //! ```
-//! 
+//!
 //! # Sequential Execution
-//! Graph nodes can be sequentially chained via [`SystemGraphNode::then`]. This 
+//! Graph nodes can be sequentially chained via [`SystemGraphNode::then`]. This
 //! creates a new node from a system and adds a "after" dependency on the original
 //! system.
 //! ```rust
@@ -97,7 +97,7 @@
 //! ```
 //!
 //! # Fan In
-//! A graph node can wait on multiple systems before running via [`SystemJoin::join`]. 
+//! A graph node can wait on multiple systems before running via [`SystemJoin::join`].
 //! The system will not run until all prior systems are finished.
 //! ```rust
 //! # use bevy_ecs::prelude::*;
@@ -141,7 +141,7 @@
 //! ```
 //!
 //! # Cloning
-//! Individual [graph nodes] are backed by a [`Rc`], so cloning it will still 
+//! Individual [graph nodes] are backed by a [`Rc`], so cloning it will still
 //! point to the same logical underlying graph.
 //!
 //! [`Schedule`]: bevy_ecs::schedule::Schedule
@@ -167,12 +167,12 @@ use std::{
 static NEXT_GRAPH_ID: AtomicU32 = AtomicU32::new(0);
 
 /// A builder for creating graphs of dependent parallel execution within a [`SystemStage`].
-/// 
+///
 /// Please see the crate level docs for examples on how to use this type.
-/// 
+///
 /// This type implements [`Clone`] by wrapping a [`Rc`] and can be safely
 /// clone and still have the clone refer to the same underlying graph.
-/// 
+///
 /// [`SystemStage`]: bevy_ecs::schedule::SystemStage
 #[derive(Clone)]
 pub struct SystemGraph {
@@ -283,7 +283,7 @@ impl From<SystemGraph> for SystemSet {
 }
 
 /// A single node within a `SystemGraph` that represents a system.
-/// 
+///
 /// This type implements [`Clone`] by wrapping a [`Rc`] and can be safely
 /// clone and still have the clone refer to the same node in the graph.
 #[derive(Clone)]
@@ -340,7 +340,7 @@ pub trait SystemJoin: Sized {
     /// Adds a system to the graph dependent on all of the nodes contained within the join.
     fn join<Param>(&self, next: impl IntoSystemDescriptor<Param>) -> SystemGraphNode;
 
-    /// Adds a [`SystemGraphNode`] to the graph that is dependent on all of nodes contained 
+    /// Adds a [`SystemGraphNode`] to the graph that is dependent on all of nodes contained
     /// within the join.
     ///
     /// Functionally equivalent to calling `join` on every node created from the group.
