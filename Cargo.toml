@@ -1,0 +1,9 @@
+[package]
+name = "bevy_system_graph"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy_ecs = "0.6"
+bevy_ecs_macros = "0.6"
+bevy_utils = "0.6"
