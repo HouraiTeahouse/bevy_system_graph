@@ -10,9 +10,9 @@ of systems for the [Bevy][bevy] game engine.
 
 ## Bevy Version Supported
 
-|Bevy Version|bevy\_backroll|
-|:-----------|:-------------|
-|0.1         |0.6           |
+|Bevy Version|bevy\_system\_graph|
+|:-----------|:------------------|
+|0.1         |0.6                |
 
 ### Starting a Graph
 To start building a system graph, one or more systems must be added to the graph
