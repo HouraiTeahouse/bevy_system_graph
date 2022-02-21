@@ -122,7 +122,7 @@
 //!
 //! # Fan Out into Fan In
 //! The types used to implement [fork] and [join] are composable.
-//! ```
+//! ```rust
 //! # use bevy_ecs::prelude::*;
 //! # fn sys_a() {}
 //! # fn sys_b() {}
