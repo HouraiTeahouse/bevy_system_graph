@@ -162,7 +162,6 @@ use bevy_ecs::schedule::{
     ExclusiveSystemDescriptorCoercion, IntoSystemDescriptor, ParallelSystemDescriptorCoercion,
     SystemDescriptor, SystemLabel, SystemSet,
 };
-use bevy_ecs_macros::all_tuples;
 use bevy_utils::HashMap;
 use std::{
     cell::RefCell,
@@ -434,7 +433,21 @@ macro_rules! impl_system_tuple {
     };
 }
 
-all_tuples!(impl_system_tuple, 1, 16, T);
+impl_system_tuple!(T1, T2);
+impl_system_tuple!(T1, T2, T3);
+impl_system_tuple!(T1, T2, T3, T4);
+impl_system_tuple!(T1, T2, T3, T4, T5);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15);
+impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct NodeId(u32, u32);

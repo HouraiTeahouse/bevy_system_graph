@@ -12,7 +12,8 @@ of systems for the [Bevy][bevy] game engine.
 
 |Bevy Version|bevy\_system\_graph|
 |:-----------|:------------------|
-|0.1         |0.6                |
+|0.7         |0.2                |
+|0.6         |0.1                |
 
 ### Starting a Graph
 To start building a system graph, one or more systems must be added to the graph

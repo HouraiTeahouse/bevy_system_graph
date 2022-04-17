@@ -11,6 +11,5 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-bevy_ecs = "0.6"
-bevy_ecs_macros = "0.6"
-bevy_utils = "0.6"
+bevy_ecs = "0.7"
+bevy_utils = "0.7"
