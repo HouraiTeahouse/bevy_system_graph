@@ -1,4 +1,5 @@
 #![deny(missing_docs)]
+#![forbid(unsafe_code)]
 //! This crate provides the utilities for creating strictly ordered execution graphs
 //! of systems for the [Bevy][bevy] game engine.
 //!
