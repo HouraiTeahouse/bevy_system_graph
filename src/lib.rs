@@ -76,10 +76,16 @@
 //! ```rust
 //! # use bevy_system_graph::*;
 //! # use bevy_ecs::prelude::*;
+//! # #[derive(Component)]
+//! # struct A;
+//! # #[derive(Component)]
+//! # struct B;
+//! # #[derive(Component)]
+//! # struct C;
 //! # fn sys_a() {}
-//! # fn sys_b() {}
-//! # fn sys_c() {}
-//! # fn sys_d() {}
+//! # fn sys_b(query: Query<&A>) {}
+//! # fn sys_c(query: Query<&B>) {}
+//! # fn sys_d(query: Query<&C>) {}
 //! # fn sys_e() {}
 //! # fn sys_f() {}
 //! let graph = SystemGraph::new();
@@ -324,14 +330,14 @@ impl SystemGraphNode {
     ///
     /// Functionally equivalent to calling `SystemGraphNode::then` multiple times.
     #[inline]
-    pub fn fork<Param, T: SystemGroup<Param>>(&self, system_group: T) -> T::Output {
+    pub fn fork<Params, T: SystemGroup<Params>>(&self, system_group: T) -> T::Output {
         system_group.fork_from(self)
     }
 }
 
 /// Represents a collection of systems. Used for grouping systems together for making
 /// [`SystemGraph`]s.
-pub trait SystemGroup<Param> {
+pub trait SystemGroup<Params> {
     /// The output of forking or joining a group of [`SystemGraphNode`]s.
     type Output;
 
@@ -352,12 +358,12 @@ pub trait SystemJoin: Sized {
     ///
     /// Functionally equivalent to calling `join` on every node created from the group.
     #[inline]
-    fn join_all<Param, G: SystemGroup<Param>>(&self, next: G) -> G::Output {
+    fn join_all<Params, G: SystemGroup<Params>>(&self, next: G) -> G::Output {
         next.join_from(self)
     }
 }
 
-impl<Param, T: IntoSystemDescriptor<Param>> SystemGroup<Param> for Vec<T> {
+impl<Params, T: IntoSystemDescriptor<Params>> SystemGroup<Params> for Vec<T> {
     type Output = Vec<SystemGraphNode>;
     fn fork_from(self, src: &SystemGraphNode) -> Self::Output {
         self.into_iter().map(|sys| src.then(sys)).collect()
@@ -397,15 +403,15 @@ macro_rules! ignore_first {
 }
 
 macro_rules! impl_system_tuple {
-    ($($param: ident),*) => {
-        impl<Param, $($param: IntoSystemDescriptor<Param>),*> SystemGroup<Param> for ($($param,)*) {
-            type Output = ($(ignore_first!($param, SystemGraphNode),)*);
+    ($($param: ident, $sys: ident),*) => {
+        impl<$($param, $sys: IntoSystemDescriptor<$param>),*> SystemGroup<($($param,)*)> for ($($sys,)*) {
+            type Output = ($(ignore_first!($sys, SystemGraphNode),)*);
 
             #[inline]
             #[allow(non_snake_case)]
             fn fork_from(self, src: &SystemGraphNode) -> Self::Output {
-                let ($($param,)*) = self;
-                ($(src.then($param),)*)
+                let ($($sys,)*) = self;
+                ($(src.then($sys),)*)
             }
 
             #[inline]
@@ -433,21 +439,40 @@ macro_rules! impl_system_tuple {
     };
 }
 
-impl_system_tuple!(T1, T2);
-impl_system_tuple!(T1, T2, T3);
-impl_system_tuple!(T1, T2, T3, T4);
-impl_system_tuple!(T1, T2, T3, T4, T5);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15);
-impl_system_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16);
+impl_system_tuple!(P1, T1, P2, T2);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4, P5, T5);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8);
+impl_system_tuple!(P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11,
+    P12, T12
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11,
+    P12, T12, P13, T13
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11,
+    P12, T12, P13, T13, P14, T14
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11,
+    P12, T12, P13, T13, P14, T14, P15, T15
+);
+impl_system_tuple!(
+    P1, T1, P2, T2, P3, T3, P4, T4, P5, T5, P6, T6, P7, T7, P8, T8, P9, T9, P10, T10, P11, T11,
+    P12, T12, P13, T13, P14, T14, P15, T15, P16, T16
+);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct NodeId(u32, u32);
