@@ -12,6 +12,7 @@ of systems for the [Bevy][bevy] game engine.
 
 |Bevy Version|bevy\_system\_graph|
 |:-----------|:------------------|
+|0.9         |0.4                |
 |0.8         |0.3                |
 |0.7         |0.2                |
 |0.6         |0.1                |
