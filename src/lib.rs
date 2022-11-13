@@ -165,10 +165,7 @@
 //! [join]: crate::SystemJoin::join
 //! [bevy]: https://bevyengine.org/
 
-use bevy_ecs::schedule::{
-    ExclusiveSystemDescriptorCoercion, IntoSystemDescriptor, ParallelSystemDescriptorCoercion,
-    SystemDescriptor, SystemLabel, SystemSet,
-};
+use bevy_ecs::schedule::{IntoSystemDescriptor, SystemDescriptor, SystemLabel, SystemSet};
 use bevy_utils::HashMap;
 use std::{
     cell::RefCell,
@@ -229,7 +226,7 @@ impl SystemGraph {
         self.id == other.id
     }
 
-    fn create_node(&self, mut system: SystemDescriptor) -> SystemGraphNode {
+    fn create_node(&self, system: SystemDescriptor) -> SystemGraphNode {
         let mut nodes = self.nodes.borrow_mut();
         assert!(
             nodes.len() <= u32::MAX as usize,
@@ -237,15 +234,7 @@ impl SystemGraph {
             u32::MAX
         );
         let id = NodeId(self.id, nodes.len() as u32);
-        system = match system {
-            SystemDescriptor::Parallel(descriptor) => {
-                SystemDescriptor::Parallel(descriptor.label(id))
-            }
-            SystemDescriptor::Exclusive(descriptor) => {
-                SystemDescriptor::Exclusive(descriptor.label(id))
-            }
-        };
-        nodes.insert(id, system);
+        nodes.insert(id, system.label(id));
         SystemGraphNode {
             id,
             graph: self.clone(),
@@ -255,17 +244,7 @@ impl SystemGraph {
     fn add_dependency(&self, origin: NodeId, dependent: NodeId) {
         let mut nodes = self.nodes.borrow_mut();
         if let Some(system) = nodes.remove(&dependent) {
-            nodes.insert(
-                dependent,
-                match system {
-                    SystemDescriptor::Parallel(descriptor) => {
-                        SystemDescriptor::Parallel(descriptor.after(origin))
-                    }
-                    SystemDescriptor::Exclusive(descriptor) => {
-                        SystemDescriptor::Exclusive(descriptor.after(origin))
-                    }
-                },
-            );
+            nodes.insert(dependent, system.after(origin));
         } else {
             panic!(
                 "Attempted to add dependency for {:?}, which doesn't exist.",
@@ -283,14 +262,7 @@ impl From<SystemGraph> for SystemSet {
     fn from(graph: SystemGraph) -> Self {
         let mut system_set = SystemSet::new();
         for (_, system) in graph.nodes.borrow_mut().drain() {
-            match system {
-                SystemDescriptor::Parallel(descriptor) => {
-                    system_set = system_set.with_system(descriptor);
-                }
-                SystemDescriptor::Exclusive(descriptor) => {
-                    system_set = system_set.with_system(descriptor);
-                }
-            }
+            system_set = system_set.with_system(system);
         }
         system_set
     }
