@@ -1,3 +1,7 @@
+# THIS PACKAGE IS NOW DEPRECATED.
+As of [Bevy 0.10](https://bevyengine.org/news/bevy-0-10/), much of this functionality is now fairly easily done without a third party plugin with the
+changes from the ECS Schedule V3. As such, this repo will now be permanently archived.
+
 # bevy_system_graph
 
 [![crates.io](https://img.shields.io/crates/v/bevy_system_graph.svg)](https://crates.io/crates/bevy_system_graph)
